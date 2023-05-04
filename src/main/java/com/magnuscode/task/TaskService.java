@@ -1,5 +1,6 @@
 package com.magnuscode.task;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.ObjectNotFoundException;
@@ -57,4 +58,16 @@ public class TaskService {
         return findById(id)
                 .chain(Task::delete);
     }
+
+    @WithTransaction
+    public Uni<Boolean> setComplete(long id, boolean complete) {
+        return findById(id)
+                .chain(task -> {
+                    task.complete = complete ? ZonedDateTime.now() : null;
+                    return task.persistAndFlush();
+                })
+                .chain(task -> Uni.createFrom().item(complete));
+
+    }
+
 }
