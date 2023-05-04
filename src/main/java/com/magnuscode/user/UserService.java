@@ -14,20 +14,18 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
+@WithSession
 public class UserService {
 
-    @WithSession
     public Uni<User> findById(long id) {
         return User.<User>findById(id)
                 .onItem().ifNull().failWith(() -> new ObjectNotFoundException(id, "User"));
     }
 
-    @WithSession
     public Uni<User> findByName(String name) {
         return User.find("name", name).firstResult();
     }
 
-    @WithSession
     public Uni<List<User>> list() {
         return User.listAll();
     }
