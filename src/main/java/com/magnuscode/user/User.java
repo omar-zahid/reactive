@@ -3,6 +3,10 @@ package com.magnuscode.user;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -23,6 +27,7 @@ public class User extends PanacheEntity {
     @Column(nullable = false)
     String password;
 
+    @CreationTimestamp
     @Column(updatable = false, nullable = false)
     public ZonedDateTime created;
 
@@ -33,5 +38,10 @@ public class User extends PanacheEntity {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "role")
     public List<String> roles;
+
+    @JsonProperty("password")
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

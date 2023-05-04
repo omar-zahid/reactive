@@ -57,4 +57,10 @@ public class UserResource {
         return userService.delete(id);
     }
 
+    @GET
+    @Path("self")
+    public Uni<User> getCurrentUser() {
+        return userService.getCurrentUser();
+    }
+
 }
