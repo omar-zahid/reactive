@@ -8,13 +8,11 @@ import com.magnuscode.project.Project;
 import com.magnuscode.task.Task;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
-import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-@WithSession
 public class UserService {
 
     public Uni<User> findById(long id) {
@@ -52,7 +50,6 @@ public class UserService {
                         .chain(t -> u.delete()));
     }
 
-    @WithSession
     public Uni<User> getCurrentUser() {
         return User.find("order by ID").firstResult();
     }
