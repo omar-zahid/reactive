@@ -11,12 +11,14 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.security.UnauthorizedException;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class TaskService {
 
     private final UserService userService;
 
+    @Inject
     public TaskService(UserService userService) {
         this.userService = userService;
     }
