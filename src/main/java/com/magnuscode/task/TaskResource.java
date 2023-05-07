@@ -13,6 +13,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/api/v1/tasks")
@@ -58,6 +59,7 @@ public class TaskResource {
     }
 
     @PUT
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}/complete")
     public Uni<Boolean> setComplete(@PathParam("id") long id, boolean complete) {
         return taskService.setComplete(id, complete);

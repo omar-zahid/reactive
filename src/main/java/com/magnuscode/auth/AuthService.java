@@ -7,6 +7,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.magnuscode.user.UserService;
 
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.security.AuthenticationFailedException;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.mutiny.Uni;
@@ -14,6 +15,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
+@WithSession
 public class AuthService {
     private final String issuer;
     private final UserService userService;
