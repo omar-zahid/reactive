@@ -64,14 +64,7 @@ public class UserService {
                         .chain(t -> u.delete()));
     }
 
-    public Uni<User> getCurrentUser() {
-        return findByName(jwt.getName());
-    }
-
-    public static boolean matches(User user, String password) {
-        return BcryptUtil.matches(password, user.password);
-    }
-
+    @WithTransaction
     public Uni<User> changePassword(String currentPassword, String newPassword) {
         return getCurrentUser()
                 .chain(u -> {
@@ -83,4 +76,11 @@ public class UserService {
                 });
     }
 
+    public Uni<User> getCurrentUser() {
+        return findByName(jwt.getName());
+    }
+
+    public static boolean matches(User user, String password) {
+        return BcryptUtil.matches(password, user.password);
+    }
 }
