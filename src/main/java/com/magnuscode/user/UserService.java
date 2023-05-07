@@ -2,6 +2,7 @@ package com.magnuscode.user;
 
 import java.util.List;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.ObjectNotFoundException;
 
 import com.magnuscode.project.Project;
@@ -11,9 +12,19 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class UserService {
+
+    private final JsonWebToken jwt;
+
+    @Inject
+    public UserService(JsonWebToken jwt) {
+        this.jwt = jwt;
+    }
 
     public Uni<User> findById(long id) {
         return User.<User>findById(id)
@@ -37,7 +48,10 @@ public class UserService {
     @WithTransaction
     public Uni<User> update(User user) {
         return findById(user.id)
-                .chain(u -> User.getSession())
+                .chain(u -> {
+                    user.setPassword(user.password);
+                    return User.getSession();
+                })
                 .chain(s -> s.merge(user));
     }
 
@@ -51,11 +65,22 @@ public class UserService {
     }
 
     public Uni<User> getCurrentUser() {
-        return User.find("order by ID").firstResult();
+        return findByName(jwt.getName());
     }
 
     public static boolean matches(User user, String password) {
         return BcryptUtil.matches(password, user.password);
+    }
+
+    public Uni<User> changePassword(String currentPassword, String newPassword) {
+        return getCurrentUser()
+                .chain(u -> {
+                    if (!matches(u, currentPassword)) {
+                        throw new ClientErrorException("Current password does not match", Response.Status.CONFLICT);
+                    }
+                    u.setPassword(BcryptUtil.bcryptHash(newPassword));
+                    return u.persistAndFlush();
+                });
     }
 
 }
